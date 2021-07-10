@@ -52,8 +52,26 @@ async function main() {
 	}
 	
 	const work_csv = await csv_stringify(work_json);
-	await fs.writeFile('./temp_work.csv', work_csv);
+	await fs.writeFile('./data/temp_work.csv', work_csv);
 	console.log("Written",time());
+	
+	const db = await open({
+		filename: './data/work.db',
+		driver: sqlite3.Database
+	});
+	
+	const create_query = 'CREATE TABLE IF NOT EXISTS current_credit (id NOT NULL TEXT, credit NOT NULL INTEGER, date NOT NULL INTEGER, hash TEXT)';
+	await db.exec(create_query);
+	
+	const import_query = `
+	LOAD DATA LOCAL INFILE
+	'./data/temp_work.csv'
+	INTO TABLE current_credit
+	FIELDS TERMINATED BY ','
+	ENCLOSED BY '"'
+	LINES TERMINATED BY '\n'
+	(id, credit, date);`
+	await db.exec(import_query);
 }
 
 function time() {

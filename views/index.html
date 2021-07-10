@@ -1,0 +1,62 @@
+<!-- This is a static file -->
+<!-- served from your routes in server.js -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A cool thing made with Glitch">
+
+    <title>Welcome to Glitch!</title>
+
+    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script>
+    let apiKey = '07c248898bfb8a6eb62dcfc7c76004b6da011eb1928884672f6b502bf28d1a55';
+$.getJSON('https://api.ipinfodb.com/v3/ip-city/?format=json&key=' + apiKey, function(data) {
+  console.log(data.ipAddress);
+});
+    </script>
+
+    <!-- import the webpage's client-side javascript file -->
+    <script src="/client.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>
+        A Dream of the Future
+      </h1>
+    </header>
+
+    <main>
+      <p class="bold">Oh hi,</p>
+      
+      <p>Tell me your hopes and dreams:</p>
+      
+      <form>
+        <input name="dream" aria-label="a new dream" type="text" maxlength="100" placeholder="Dreams!">
+        <button type="submit" id="submit-dream">Submit Dream</button>
+      </form>
+      
+      <section class="dreams">
+        <ul id="dreams"></ul>
+        <button id="clear-dreams">
+          Clear Dreams
+        </button>
+      </section>
+      
+    </main>
+
+    <footer>
+      Made with <a href="https://glitch.com">Glitch</a>!
+    </footer>
+
+    <!-- include the Glitch button to show what the webpage is about and
+          to make it easier for folks to view source and remix -->
+    <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
+    <script src="https://button.glitch.me/button.js" defer></script>
+  </body>
+</html>

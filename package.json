@@ -1,7 +1,7 @@
 {
   "name": "troll-folding",
   "version": "1.0.0",
-  "description": "",
+  "description": "when the Troll is folding!",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,10 +9,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "csv-stringify": "^5.6.2",
+    "express": "^4.17.1",
     "fs": "^0.0.1-security",
     "sqlite": "^4.0.23",
     "sqlite3": "^5.0.2",
     "undici-fetch": "^1.0.0-rc.4"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trollarcurrency/troll-folding.git"
+  },
+  "bugs": {
+    "url": "https://github.com/trollarcurrency/troll-folding/issues"
+  },
+  "homepage": "https://github.com/trollarcurrency/troll-folding#readme"
 }
