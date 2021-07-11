@@ -1,9 +1,11 @@
 const start = new Date().getTime();
 
 const fetch = require('undici-fetch');
+const os = require('os');
 const fs = require('fs').promises;
 const util = require('util');
 const csv_stringify = util.promisify(require('csv-stringify'));
+const exec = util.promisify(require('child_process').exec);
 const sqlite3 = require('sqlite3');
 const open = require('sqlite').open;
 
@@ -47,7 +49,8 @@ async function main() {
 		work_json.push({
 			"id": key,
 			"credit": credit,
-			"date": start
+			"date": start,
+			"hash": ""
 		});
 	}
 	
@@ -60,18 +63,23 @@ async function main() {
 		driver: sqlite3.Database
 	});
 	
-	const create_query = 'CREATE TABLE IF NOT EXISTS current_credit (id NOT NULL TEXT, credit NOT NULL INTEGER, date NOT NULL INTEGER, hash TEXT)';
+	const create_query = 'CREATE TABLE IF NOT EXISTS work (id TEXT NOT NULL, credit INTEGER NOT NULL, date INTEGER NOT NULL, hash TEXT)';
 	await db.exec(create_query);
+	await db.close();
 	
-	const import_query = `
-	LOAD DATA LOCAL INFILE
-	'./data/temp_work.csv'
-	INTO TABLE current_credit
-	FIELDS TERMINATED BY ','
-	ENCLOSED BY '"'
-	LINES TERMINATED BY '\n'
-	(id, credit, date);`
-	await db.exec(import_query);
+	console.log("Initialized",time());
+	
+	const sql_cmd = (os.platform() === 'win32') ? "sqlite3.exe" : "./sqlite3";
+	await exec(sql_cmd + ' ./data/work.db -cmd ".mode csv" ".import ./data/temp_work.csv work"');
+	
+	console.log("Imported",time());
+	
+	await fs.writeFile('./data/previous_scraped.json', JSON.stringify(current_data));
+	await fs.unlink('./data/temp_work.csv');
+	
+	console.log("Finished",time());
+	
+	console.log("New work: " + work_json.length);
 }
 
 function time() {
