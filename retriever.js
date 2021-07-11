@@ -69,8 +69,8 @@ async function main() {
 	
 	console.log("Initialized",time());
 	
-	const sql_cmd = (os.platform() === 'win32') ? "sqlite3.exe" : "./sqlite3";
-	await exec(sql_cmd + ' ./data/work.db -cmd ".mode csv" ".import ./data/temp_work.csv work"');
+	const sql_cli = (os.platform() === 'win32') ? "sqlite3.exe" : "./sqlite3";
+	await exec(sql_cli + ' ./data/work.db -cmd ".mode csv" ".import ./data/temp_work.csv work"');
 	
 	console.log("Imported",time());
 	
