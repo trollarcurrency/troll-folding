@@ -66,17 +66,14 @@ async function main() {
 	const create_query = 'CREATE TABLE IF NOT EXISTS work (id TEXT NOT NULL, credit INTEGER NOT NULL, date INTEGER NOT NULL, hash TEXT)';
 	await db.exec(create_query);
 	await db.close();
-	
 	console.log("Initialized",time());
 	
 	const sql_cli = (os.platform() === 'win32') ? "sqlite3.exe" : "./sqlite3";
 	await exec(sql_cli + ' ./data/work.db -cmd ".mode csv" ".import ./data/temp_work.csv work"');
-	
 	console.log("Imported",time());
 	
 	await fs.writeFile('./data/previous_scraped.json', JSON.stringify(current_data));
 	await fs.unlink('./data/temp_work.csv');
-	
 	console.log("Finished",time());
 	
 	console.log("New work: " + work_json.length);
