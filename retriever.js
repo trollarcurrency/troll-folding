@@ -45,10 +45,10 @@ async function main() {
 	}
 
 	const users_db = await open({
-		filename: "./data/work.db",
+		filename: "./data/users.db",
 		driver: sqlite3.Database,
 	});
-	const select_query = 'SELECT id FROM work';
+	const select_query = 'SELECT id FROM users';
 	const users_array = (await users_db.all(select_query)).map(x => x.id).sort();
 	await users_db.close();
 
