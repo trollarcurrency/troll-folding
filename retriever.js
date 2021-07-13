@@ -8,7 +8,7 @@ const csv_stringify = util.promisify(require("csv-stringify"));
 const exec = util.promisify(require("child_process").exec);
 const sqlite3 = require("sqlite3");
 const open = require("sqlite").open;
-import binarySearchContains from './binary-search.js';
+const binarySearchContains = require('./binary-search.js').default;
 
 const fah_url = "https://apps.foldingathome.org/teamstats/team234980.html";
 
@@ -45,10 +45,10 @@ async function main() {
 	}
 
 	const users_db = await open({
-		filename: "./data/users.db",
+		filename: "./data/work.db",
 		driver: sqlite3.Database,
 	});
-	const select_query = 'SELECT id FROM users';
+	const select_query = 'SELECT id FROM work';
 	const users_array = (await users_db.all(select_query)).map(x => x.id).sort();
 	await users_db.close();
 
@@ -75,13 +75,12 @@ async function main() {
 	});
 
 	const create_query = `
-		CREATE TABLE IF NOT EXISTS WORK(
+		CREATE TABLE IF NOT EXISTS work(
 			id TEXT NOT NULL,
 			credit INTEGER NOT NULL,
 			date INTEGER NOT NULL,
 			hash TEXT
-		)
-	`;
+		);`;
 
 	await work_db.exec(create_query);
 	await work_db.close();

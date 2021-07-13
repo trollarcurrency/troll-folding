@@ -1,7 +1,7 @@
 const bs = require('binary-search');
 
-export default function binarySearchContains(array, value) {
-    return bs(array, value, defaultCompare) > 0;
+exports.default = function binarySearchContains(array, value) {
+    return bs(array, value, defaultCompare) > -1;
 }
 
 function defaultCompare( x, y ) {
