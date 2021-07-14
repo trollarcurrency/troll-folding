@@ -1,48 +1,58 @@
-const express = require('express');
-const xno = require('nanocurrency');
-const cryptoRandomString = require('crypto-random-string');
-const sqlite3 = require('sqlite3');
-const open = require('sqlite').open;
+import express from 'express';
+import xno from 'nanocurrency';
+import cryptoRandomString from 'crypto-random-string';
+import sqlite3 from 'sqlite3';
+import * as sqlite from 'sqlite';
 
 const app = express();
+app.use(express.json());
 const port = 6547;
-var db;
 
+var db;
 async function init() {
-    db = await open({
+    db = await sqlite.open({
         filename: './data/users.db',
         driver: sqlite3.Database
     });
-    const create_query = `
+    await db.exec(`
         CREATE TABLE IF NOT EXISTS users(
             id TEXT NOT NULL PRIMARY KEY,
-            address TEXT NOT NULL
-        );`;
-	await db.exec(create_query);
+            address TEXT NOT NULL UNIQUE
+        );
+    `);
 }
-
 init();
 
-app.use(express.json());
-
-app.listen(port, () => {
-	console.log(`Listening at http://localhost:${port}`);
+const server = app.listen(port, () => {
+    console.log(`Listening at http://localhost:${port}`);
 });
 
-app.post("/", async (req, res) => {
-	var address = (req.body.address || "").toString().trim();
-	if (
-		!address.startsWith("troll") ||
-		!xno.checkAddress("nano" + address.slice(5))
-	) {
-		res.json({ error: "Invalid address" });
-		return;
-	}
-	const id = cryptoRandomString({length: 10, type: 'alphanumeric'});
+app.post('/', async (req, res) => {
+    const address = (req.body.address || "").toString().trim();
+    if (!address.startsWith("troll") ||
+        !xno.checkAddress("nano" + address.slice(5))) {
+        res.json({ error: "Invalid address" });
+        return;
+    }
 
-	await db.run('INSERT INTO USERS(id, address) VALUES (?), (?)', [id, address]);
+    const existing_row = await db.get('SELECT id FROM users WHERE address = ?', address);
+    if (existing_row) {
+        res.json({ "id": existing_row.id });
+        return;
+    }
+
+    const id = cryptoRandomString({ length: 10, type: 'alphanumeric' });
+
+    await db.run('INSERT INTO users(id, address) VALUES (?, ?)', [id, address]);
 
     res.json({
         "id": id
     });
+});
+
+process.on('SIGINT', function () {
+    console.log("Shutting down");
+    server.close();
+    db.close();
+    process.exit();
 });
