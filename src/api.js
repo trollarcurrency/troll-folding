@@ -44,7 +44,7 @@ app.post('/', async (req, res) => {
 
     const id = cryptoRandomString({ length: 10, type: 'alphanumeric' });
 
-    await db.run('INSERT INTO users(id, address) VALUES (?, ?, ?)', [id, address, Date.now()]);
+    await db.run('INSERT INTO users(id, address, date) VALUES (?, ?, ?)', [id, address, Date.now()]);
 
     res.json({
         "id": id
