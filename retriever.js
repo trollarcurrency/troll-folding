@@ -1,14 +1,16 @@
 const start = new Date().getTime();
 
-const fetch = require("undici-fetch");
-const os = require("os");
-const fs = require("fs").promises;
-const util = require("util");
-const csv_stringify = util.promisify(require("csv-stringify"));
-const exec = util.promisify(require("child_process").exec);
-const sqlite3 = require("sqlite3");
-const open = require("sqlite").open;
-const binarySearchContains = require('./binary-search.js').default;
+import fetch from 'undici-fetch';
+import os from 'os';
+import { promises as fs } from 'fs';
+import { promisify } from 'util';
+import { exec as exec_callback } from 'child_process';
+const exec = promisify(exec_callback);
+import { default as csv_callback } from 'csv-stringify';
+const csv_stringify = promisify(csv_callback);
+import sqlite3 from 'sqlite3';
+import * as sqlite from 'sqlite';
+import binarySearchContains from './binary-search.js';
 
 const fah_url = "https://apps.foldingathome.org/teamstats/team234980.html";
 
@@ -44,7 +46,7 @@ async function main() {
 		process.exit();
 	}
 
-	const users_db = await open({
+	const users_db = await sqlite.open({
 		filename: "./data/users.db",
 		driver: sqlite3.Database,
 	});
@@ -69,7 +71,7 @@ async function main() {
 	await fs.writeFile("./data/temp_work.csv", work_csv);
 	console.log("Written", time());
 
-	const work_db = await open({
+	const work_db = await sqlite.open({
 		filename: "./data/work.db",
 		driver: sqlite3.Database,
 	});
