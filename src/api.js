@@ -17,7 +17,8 @@ async function init() {
     await db.exec(`
         CREATE TABLE IF NOT EXISTS users(
             id TEXT NOT NULL PRIMARY KEY,
-            address TEXT NOT NULL UNIQUE
+            address TEXT NOT NULL UNIQUE,
+            date INTEGER
         );
     `);
 }
@@ -43,7 +44,7 @@ app.post('/', async (req, res) => {
 
     const id = cryptoRandomString({ length: 10, type: 'alphanumeric' });
 
-    await db.run('INSERT INTO users(id, address) VALUES (?, ?)', [id, address]);
+    await db.run('INSERT INTO users(id, address) VALUES (?, ?, ?)', [id, address, Date.now()]);
 
     res.json({
         "id": id

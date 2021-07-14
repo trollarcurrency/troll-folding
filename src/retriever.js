@@ -1,4 +1,4 @@
-const start = new Date().getTime();
+const start = Date.now();
 
 import fetch from 'undici-fetch';
 import os from 'os';
@@ -106,7 +106,7 @@ async function main() {
 }
 
 function time() {
-	const now = new Date().getTime();
+	const now = Date.now();
 	const time = now - start;
 	return "(" + time + "ms)";
 }
