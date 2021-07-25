@@ -5,12 +5,12 @@ import { promisify } from 'util';
 import { exec as exec_callback } from 'child_process';
 const exec = promisify(exec_callback);
 import { default as csv_callback } from 'csv-stringify';
-const csv_stringify = promisify(csv_callback);
-import binarySearchContains from './binary-search.js';
+const csv_stringify: (object: object) => Promise<string> = promisify(csv_callback);
+import binarySearchContains from './lib/binary-search.js';
 import cryptoRandomString from 'crypto-random-string';
-import { users_db, logger, work_db } from './global.js';
+import { users_db, logger, work_db } from './lib/global.js';
 
-var start;
+var start: number;
 
 const fah_url = "https://apps.foldingathome.org/teamstats/team234980.html";
 
@@ -23,7 +23,7 @@ async function get_api_data() {
 	body = body.split("</body>")[0];
 
 	var nodes = body.split(/<td>|<\/td>/);
-	var result = {};
+	var result: { [user: string]: number } = {};
 	for (var i = 5; i < nodes.length; i += 10) {
 		result[nodes[i]] = parseInt(nodes[i + 2]);
 	}
@@ -38,13 +38,13 @@ export default async function retrieve() {
 	var previous_data;
 	try {
 		previous_data = JSON.parse(
-			await fs.readFile("./data/previous_scraped.json")
+			await fs.readFile("./data/previous_scraped.json", 'utf8')
 		);
 		if (Object.keys(current_data).length < Object.keys(previous_data).length)
 			throw new Error();
 	} catch {
 		logger.error("Prev data inacc./corr.");
-		process.exit();
+		return null;
 	}
 
 	const select_query = 'SELECT id FROM users';
@@ -53,7 +53,7 @@ export default async function retrieve() {
 	const work_json = [];
 	for (var key in current_data) {
 		if (previous_data[key] == current_data[key]) continue;
-		//if (!binarySearchContains(users_array, key)) continue;
+		if (!binarySearchContains(users_array, key)) continue;
 		
 		const credit = current_data[key] - (previous_data[key] || 0);
 		work_json.push({
@@ -78,7 +78,7 @@ export default async function retrieve() {
 	);
 	logger.info("Imported", time());
 
-	const fix_null_query = (col) => `
+	const fix_null_query = (col: string) => `
 		UPDATE work
 		SET ${col} = NULL
 		WHERE ${col} = "";

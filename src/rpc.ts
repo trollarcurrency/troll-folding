@@ -1,15 +1,25 @@
 import axios from 'axios';
-import { logger } from './global.js';
+import { logger } from './lib/global.js';
 import bigRat from 'big-rational';
 import cryptoRandomString from 'crypto-random-string';
 
 export default class RPC {
-    constructor(wallet, server) {
+    wallet: string;
+    server: string;
+    address: string | null;
+    constructor(wallet: string | undefined, server: string) {
+        if (!wallet) {
+            logger.error("Missing wallet ID in RPC initialization");
+            process.exit();
+        }
         this.wallet = wallet;
         this.server = server;
+        this.address = null;
     }
     async init() {
-        const response = await axios.post(this.server, {
+        const response: {
+            accounts: Array<string>
+        } = await axios.post(this.server, {
             "action": "account_list",
             "wallet": this.wallet
         });
@@ -21,7 +31,7 @@ export default class RPC {
         }
         logger.info("Initialized RPC");
     }
-    async send(amount, destination) {
+    async send(amount: string | number, destination: string) {
         const req_json = {
             "action": "send",
             "wallet": this.wallet,
@@ -32,7 +42,9 @@ export default class RPC {
         };
         var block;
         for (var i = 0; i < 3; i++) {
-            const response = await axios.post(server, req_json);
+            const response: {
+                block: string | undefined
+            } = await axios.post(this.server, req_json);
             block = response["block"];
             if (!block) {
                 logger.error("Failed to send");
@@ -45,7 +57,14 @@ export default class RPC {
         return block || null;
     }
     async balance() {
-        const response = await axios.post(server, {
+        const response: {
+            balances: {
+                [address: string]: {
+                    balance: string,
+                    pending: string
+                }
+            }
+        } = await axios.post(this.server, {
             "action": "wallet_balances",
             "wallet": this.wallet
         });
@@ -58,14 +77,14 @@ export default class RPC {
             logger.error("Response", response);
             process.exit();
         }
-        return balance;
+        return toDec(balance);
     }
 }
 
-function toRaw(amount) {
+function toRaw(amount: string | number) {
     return bigRat(amount).multiply(10n ** 29n).round(true).toString();
 }
 
-function toDec(amount) {
+function toDec(amount: string | number) {
     return bigRat(amount).divide(10n ** 29n).toDecimal();
 }

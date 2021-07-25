@@ -1,10 +1,10 @@
 import binarySearch from "binary-search";
 
-export default function binarySearchContains(array, value) {
+export default function binarySearchContains(array: Array<any>, value: any) {
     return binarySearch(array, value, defaultCompare) > -1;
 }
 
-function defaultCompare( x, y ) {
+function defaultCompare( x: any, y: any ) {
     //INFO: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
     //ECMA specification: http://www.ecma-international.org/ecma-262/6.0/#sec-sortcompare
 
@@ -29,7 +29,7 @@ function defaultCompare( x, y ) {
     return 0;
 }
 
-function toString(obj) {
+function toString(obj: any) {
     //ECMA specification: http://www.ecma-international.org/ecma-262/6.0/#sec-tostring
 
     if( obj === null )

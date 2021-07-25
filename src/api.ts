@@ -1,11 +1,13 @@
 import express from 'express';
 import xno from 'nanocurrency';
 import cryptoRandomString from 'crypto-random-string';
-import { users_db } from './global.js';
+import { users_db } from './lib/global.js';
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
+    
+
     const address = (req.body.address || "").toString().trim();
     if (!address.startsWith("troll") ||
         !xno.checkAddress("nano" + address.slice(5))) {

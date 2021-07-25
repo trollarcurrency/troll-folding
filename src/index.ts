@@ -1,5 +1,5 @@
 import * as schedule from 'node-schedule';
-import { logger } from './global.js';
+import { logger } from './lib/global.js';
 import express from 'express';
 import api_route from './api.js';
 import retrieve from './retriever.js';

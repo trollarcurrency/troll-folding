@@ -2,12 +2,12 @@ import winston from 'winston';
 import util from 'util';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import Database from './db-wrap.js';
-import RPC from './rpc.js';
+import RPC from '../rpc.js';
 
 export const logger = winston.createLogger({
     format: winston.format.combine(
         {transform: (info) => {
-            info.message = util.format(info.message, ...info[Symbol.for('splat')] || [])
+            info.message = util.format(info.message, ...info[Symbol.for('splat') as any] || [])
             return info;
           }
         },
@@ -24,16 +24,6 @@ export const logger = winston.createLogger({
             datePattern: 'YYYY-MM-DD',
         }),
         new winston.transports.Console()
-    ]
-});
-
-export const runs_db = await Database({
-    file: './data/runs.db',
-    name: 'runs',
-    schema: [
-        'date INTEGER NOT NULL',
-        'new_work INTEGER NOT NULL',
-        'credited INTEGER NOT NULL'
     ]
 });
 
