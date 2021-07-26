@@ -46,7 +46,7 @@ async function user_summary() {
 }
 export default async function retrieve() {
     start = Date.now();
-    const current_data = await fast_stats();
+    const current_data = await user_summary();
     var previous_data;
     try {
         previous_data = JSON.parse(await fs.readFile("./data/previous_scraped.json", 'utf8'));
