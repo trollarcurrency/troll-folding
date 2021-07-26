@@ -1,4 +1,5 @@
 import fetch from 'undici-fetch';
+import got from 'got';
 import os from 'os';
 import { promises as fs } from 'fs';
 import { promisify } from 'util';
@@ -10,24 +11,42 @@ import binarySearchContains from './util/binary-search.js';
 import cryptoRandomString from 'crypto-random-string';
 import { users_db, logger, work_db } from './global.js';
 var start;
-const fah_url = "https://apps.foldingathome.org/teamstats/team234980.html";
-async function get_api_data() {
+const team_number = '1061660';
+async function fast_stats() {
+    const fah_url = `https://apps.foldingathome.org/teamstats/team${team_number}.html`;
     const response = await fetch(fah_url);
     var body = await response.text();
     logger.info("Fetched", time());
     body = body.split('<table class="members">')[1];
     body = body.split("</body>")[0];
     var nodes = body.split(/<td>|<\/td>/);
-    var result = {};
+    const result = {};
     for (var i = 5; i < nodes.length; i += 10) {
         result[nodes[i]] = parseInt(nodes[i + 2]);
     }
     logger.info("Processed", time());
     return result;
 }
+async function user_summary() {
+    const fah_url = 'https://apps.foldingathome.org/daily_user_summary.txt';
+    const download_stream = got.stream(fah_url);
+    const result = {};
+    for await (const chunk of download_stream) {
+        var lines = chunk.toString().split('\n');
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            if (line.endsWith(team_number)) {
+                var components = line.split('\t');
+                result[components[0]] = parseInt(components[1]);
+            }
+        }
+    }
+    console.log("Fetched", time());
+    return result;
+}
 export default async function retrieve() {
     start = Date.now();
-    const current_data = await get_api_data();
+    const current_data = await fast_stats();
     var previous_data;
     try {
         previous_data = JSON.parse(await fs.readFile("./data/previous_scraped.json", 'utf8'));
