@@ -10,7 +10,7 @@ import binarySearchContains from './util/binary-search.js';
 import cryptoRandomString from 'crypto-random-string';
 import { users_db, logger, work_db } from './global.js';
 var start;
-const fah_url = "https://apps.foldingathome.org/teamstats/team234980.html";
+const fah_url = "https://apps.foldingathome.org/teamstats/team1061660.html";
 async function get_api_data() {
     const response = await fetch(fah_url);
     var body = await response.text();

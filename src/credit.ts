@@ -9,10 +9,12 @@ export default async function credit() {
 	}> = await work_db.all(select_query);
 
 	const balance = await rpc.balance();
-	const to_distribute = balance - 0.5; // error margin for floating point operations
+	var to_distribute = balance - 0.5; // error margin for floating point operations
 	if (to_distribute <= 0) {
 		throw new Error("Not enough balance to distribute");
 	}
+	// Maximum value
+	if (to_distribute > 1000) to_distribute = 1000;
 
 	const internal_points = work_array.reduce((sum, val) => {
 		return sum + points_formula(val.credit);
