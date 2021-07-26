@@ -1,7 +1,7 @@
 import express from 'express';
 import xno from 'nanocurrency';
 import cryptoRandomString from 'crypto-random-string';
-import { users_db, hcaptcha_secret } from './util/global.js';
+import { users_db, hcaptcha_secret } from './global.js';
 import { verify } from 'hcaptcha';
 
 const router = express.Router();
@@ -9,7 +9,9 @@ const router = express.Router();
 router.post('/', async (req, res) => {
 	const client_response = req.body['h-captcha-response'];
 	if (!client_response) {
-		res.redirect('/req.html');
+		res.json({
+			"error": "no+captcha"
+		});
 		return;
 	}
 	
@@ -19,14 +21,16 @@ router.post('/', async (req, res) => {
 	} catch {}
 
 	if (!verify_success) {
-		res.redirect('/req.html');
+		res.json({
+			"error": "no+verify"
+		});
 		return;
 	}
 
 	const address = (req.body.address || "").toString().trim();
 	if (!address.startsWith("troll") ||
 		!xno.checkAddress("nano" + address.slice(5))) {
-		res.redirect('/req.html')
+		res.json()
 		return;
 	}
 
@@ -40,7 +44,9 @@ router.post('/', async (req, res) => {
 
 	await users_db.run('INSERT INTO users(id, address, date) VALUES (?, ?, ?)', [id, address, Date.now()]);
 
-	res.redirect(`/res.html?id=${id}`);
+	res.json({
+		"id": id
+	});
 });
 
 export default router;

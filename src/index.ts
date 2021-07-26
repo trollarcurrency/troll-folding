@@ -1,12 +1,13 @@
 import * as schedule from 'node-schedule';
-import { logger, users_db, work_db } from './util/global.js';
+import { logger, users_db, work_db } from './global.js';
 import express from 'express';
 import api_route from './api.js';
 import retrieve from './retriever.js';
 import credit from './credit.js';
+import multer from 'multer';
 
 const app = express();
-app.use(express.json());
+app.use(multer().none());
 app.use('/', express.static('public'));
 app.use('/api', api_route);
 const port = 8291;

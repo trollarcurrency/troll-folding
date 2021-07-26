@@ -1,4 +1,4 @@
-import { work_db, users_db, rpc } from "./util/global.js";
+import { work_db, users_db, rpc } from "./global.js";
 
 export default async function credit() {
 	const select_query = 'SELECT id, user, credit FROM work WHERE payment_hash IS NULL';
@@ -8,10 +8,9 @@ export default async function credit() {
 		credit: number
 	}> = await work_db.all(select_query);
 
-	const minimum_distribution = 1000;
 	const balance = await rpc.balance();
-	const to_distribute = balance - minimum_distribution;
-	if (to_distribute < 0) {
+	const to_distribute = balance - 0.5; // error margin for floating point operations
+	if (to_distribute <= 0) {
 		throw new Error("Not enough balance to distribute");
 	}
 
@@ -41,5 +40,3 @@ export default async function credit() {
 function points_formula(credit: number) {
 	return 1 / (1 + Math.sqrt(5000000 / credit));
 }
-
-credit();

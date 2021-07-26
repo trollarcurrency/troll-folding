@@ -8,7 +8,7 @@ import { default as csv_callback } from 'csv-stringify';
 const csv_stringify: (object: object) => Promise<string> = promisify(csv_callback);
 import binarySearchContains from './util/binary-search.js';
 import cryptoRandomString from 'crypto-random-string';
-import { users_db, logger, work_db } from './util/global.js';
+import { users_db, logger, work_db } from './global.js';
 
 var start: number;
 
@@ -56,7 +56,7 @@ export default async function retrieve() {
 		
 		const credit = current_data[key] - (previous_data[key] || 0);
 		work_json.push({
-			id: cryptoRandomString({ length: 10, type: 'alphanumeric' }),
+			id: cryptoRandomString({ length: 30, type: 'alphanumeric' }),
 			user: key,
 			credit: credit,
 			date: start,
@@ -101,7 +101,5 @@ export default async function retrieve() {
 function time() {
 	const now = Date.now();
 	const time = now - start;
-	return "(" + time + "ms)";
+	return `(${time}ms)`;
 }
-
-retrieve();

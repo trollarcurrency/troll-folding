@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { logger } from './util/global.js';
+import { logger } from './global.js';
 import bigRat from 'big-rational';
 import cryptoRandomString from 'crypto-random-string';
 
@@ -19,17 +19,18 @@ export default class RPC {
 	async init() {
 		const response: {
 			accounts: Array<string>
-		} = await axios.post(this.server, {
+		} = (await axios.post(this.server, {
 			"action": "account_list",
 			"wallet": this.wallet
-		});
-		this.address = response["accounts"][0];
+		})).data;
+
+		this.address = response.accounts[0];
 		if (!this.address) {
-			logger.error("Failed to initialize RPC");
+			logger.error("Failed to initialize RPC service");
 			logger.error("Response", response);
 			process.exit();
 		}
-		logger.info("Initialized RPC");
+		logger.info("Initialized RPC service");
 	}
 	async send(amount: string | number, destination: string) {
 		const req_json = {
@@ -44,7 +45,7 @@ export default class RPC {
 		for (var i = 0; i < 3; i++) {
 			const response: {
 				block: string | undefined
-			} = await axios.post(this.server, req_json);
+			} = (await axios.post(this.server, req_json)).data;
 			block = response["block"];
 			if (!block) {
 				logger.error("Failed to send");
@@ -64,10 +65,10 @@ export default class RPC {
 					pending: string
 				}
 			}
-		} = await axios.post(this.server, {
+		} = (await axios.post(this.server, {
 			"action": "wallet_balances",
 			"wallet": this.wallet
-		});
+		})).data;
 		var balance = null;
 		for (var key in response["balances"]) {
 			balance = response["balances"][key]["balance"];

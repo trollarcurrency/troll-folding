@@ -1,8 +1,11 @@
 import winston from 'winston';
 import util from 'util';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import Database from './db-wrap.js';
-import RPC from '../rpc.js';
+import Database from './util/db-wrap.js';
+import dotenv from 'dotenv';
+import RPC from './rpc.js';
+
+dotenv.config();
 
 export const logger = winston.createLogger({
 	format: winston.format.combine(
@@ -50,7 +53,7 @@ export const work_db = await Database({
 	]
 });
 
-export const rpc = new RPC(process.env.TROLL_WALLET, 'http://localhost:42727');
+export const rpc = new RPC(process.env.TROLL_WALLET, 'http://[::1]:42727');
 rpc.init();
 
 if (!process.env.HCAPTCHA_SECRET) {
