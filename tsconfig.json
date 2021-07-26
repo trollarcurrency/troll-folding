@@ -4,9 +4,7 @@
 		"module": "esnext",
 		"lib": [
             "ESNext",
-			"ES2020",
-			"ES2017",
-			"ES2015"
+			"DOM"
 		],
 		"outDir": "dist",
 		"rootDir": "./src",

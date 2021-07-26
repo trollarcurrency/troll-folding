@@ -6,9 +6,9 @@ import { exec as exec_callback } from 'child_process';
 const exec = promisify(exec_callback);
 import { default as csv_callback } from 'csv-stringify';
 const csv_stringify: (object: object) => Promise<string> = promisify(csv_callback);
-import binarySearchContains from './lib/binary-search.js';
+import binarySearchContains from './util/binary-search.js';
 import cryptoRandomString from 'crypto-random-string';
-import { users_db, logger, work_db } from './lib/global.js';
+import { users_db, logger, work_db } from './util/global.js';
 
 var start: number;
 
@@ -43,8 +43,7 @@ export default async function retrieve() {
 		if (Object.keys(current_data).length < Object.keys(previous_data).length)
 			throw new Error();
 	} catch {
-		logger.error("Prev data inacc./corr.");
-		return null;
+		throw new Error("Prev data inacc./corr.");
 	}
 
 	const select_query = 'SELECT id FROM users';
@@ -96,7 +95,7 @@ export default async function retrieve() {
 
 	var new_work = work_json.length;
 	logger.info("New work:", new_work);
-	return new_work;
+	return true;
 }
 
 function time() {

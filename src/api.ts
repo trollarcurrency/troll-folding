@@ -1,33 +1,46 @@
 import express from 'express';
 import xno from 'nanocurrency';
 import cryptoRandomString from 'crypto-random-string';
-import { users_db } from './lib/global.js';
+import { users_db, hcaptcha_secret } from './util/global.js';
+import { verify } from 'hcaptcha';
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-    
+	const client_response = req.body['h-captcha-response'];
+	if (!client_response) {
+		res.redirect('/req.html');
+		return;
+	}
+	
+	var verify_success = null;
+	try {
+		verify_success = await verify(hcaptcha_secret, client_response);
+	} catch {}
 
-    const address = (req.body.address || "").toString().trim();
-    if (!address.startsWith("troll") ||
-        !xno.checkAddress("nano" + address.slice(5))) {
-        res.json({ error: "Invalid address" });
-        return;
-    }
+	if (!verify_success) {
+		res.redirect('/req.html');
+		return;
+	}
 
-    const existing_row = await users_db.get('SELECT id FROM users WHERE address = ?', address);
-    if (existing_row) {
-        res.json({ "id": existing_row.id });
-        return;
-    }
+	const address = (req.body.address || "").toString().trim();
+	if (!address.startsWith("troll") ||
+		!xno.checkAddress("nano" + address.slice(5))) {
+		res.redirect('/req.html')
+		return;
+	}
 
-    const id = cryptoRandomString({ length: 10, type: 'alphanumeric' });
+	const existing_row = await users_db.get('SELECT id FROM users WHERE address = ?', address);
+	if (existing_row) {
+		res.json({ "id": existing_row.id });
+		return;
+	}
 
-    await users_db.run('INSERT INTO users(id, address, date) VALUES (?, ?, ?)', [id, address, Date.now()]);
+	const id = cryptoRandomString({ length: 10, type: 'alphanumeric' });
 
-    res.json({
-        "id": id
-    });
+	await users_db.run('INSERT INTO users(id, address, date) VALUES (?, ?, ?)', [id, address, Date.now()]);
+
+	res.redirect(`/res.html?id=${id}`);
 });
 
 export default router;

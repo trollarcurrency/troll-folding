@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="./paper.min.css">
-  <script src="https://hcaptcha.com/1/api.js" async defer></script>
-  <title>Document</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="./paper.min.css">
+	<script src="https://hcaptcha.com/1/api.js" async defer></script>
+	<script src="./req.js"></script>
+	<title>req</title>
 </head>
+
 <body>
-  <form action="" method="POST">
-      <input type="text" name="address" placeholder="Address"></input>
-	  <br />
-      <div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-000000000001"></div>
-      <br />
-      <input type="submit" value="Submit" />
-  </form>
+	<form action="/api" method="POST">
+		<input type="text" name="address" placeholder="troll_xxxxx..."></input>
+		<br />
+		<div 
+			class="h-captcha" 
+			data-sitekey="3be21e7f-398a-47b6-9803-5ae8e9787dde" 
+			data-callback="enableBtn" 
+			data-expired-callback="disableBtn"
+		></div>
+		<br />
+		<input type="submit" value="Submit" id="submitBtn" disabled="disabled"/>
+	</form>
 </body>
